@@ -24,7 +24,7 @@ https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/athena.html
 ### Setup Steps
 1.	Create a Lambda Role and grant permissions below:   
     * a. Athena query execution   
-    * b. S3 write (resource path is target path for temp query results *.csv storage)    
+    * b. S3 read and write (resource path is target path for temp query results *.csv storage)    
     * c. SES access    
   
 2.	Create a Lambda function    
