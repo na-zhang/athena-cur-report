@@ -27,10 +27,10 @@ https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/athena.html
     * b. S3 read and write (resource path is target path for temp query results *.csv storage)    
     * c. SES access    
   
-2.	Create a Lambda function    
+2.	Setup a Lambda function    
     * a.	Use Python 2.7 runtime    
     * b.	Handler name: <file name>.lambda_handler    
-    * c.	Set the following Environment Variable: 
+    * c.	Config variables in either way: 1) Through config.yml OR 2) Set Environment Variables as follow: 
           
           REGION – SES region
           CUR_OUTPUT_LOCATION – S3 path where Athena query results are stored e.g. “S3://Your/Query/Results/Path/”     
@@ -39,7 +39,7 @@ https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/athena.html
           RECIPIENT – Your recipient e-mail addresses   
           SUBJECT – Your subject of cost report mail    
           BODY_TEXT – Your body text of cost report mail    
-    * d.	Create a folder named ‘package’, and install the following required dependencies (libs) in this folder: 
+    * d. The tool has the follow dependencies which are included in ‘package’ sub folder: 
     
           numpy   
           Xlrd    
