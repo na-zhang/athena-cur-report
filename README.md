@@ -1,7 +1,7 @@
 ## CUR Automation Tool Guide
 ### Introduction
-This automation tool helps users for generating required CUR analysis report from Athena and sending via mail periodically.
-It’s a python script running in Lambda, triggered by CloudWatch event regularly (daily, weekly etc.) defined by users. The Lambda function queries CUR data (query strings are defined in config.yml file), pulls report files (*.csv) to local path, converts and combines them to a single xlsx file, generate required graph, and send it to configured receipts via SES.
+This automation tool helps users to generate required CUR analysis report from Athena and send it via mail periodically.
+It’s a python script running in Lambda, triggered by CloudWatch event regularly (daily, weekly etc.) defined by users. The Lambda function queries CUR data (query strings are defined in config.yml file), pulls report files (*.csv) to local path, converts and combines them to a single xlsx report file, generates required graph, and sends the report to configured receipts via SES.
 Current sample is generating data transfer report in varies dimensions including:    
 
     Inter_AZ_DT_MOM - Your month over month inter-AZ data transfer usage and change in the past three months      
@@ -10,8 +10,8 @@ Current sample is generating data transfer report in varies dimensions including
     Inter_AZ_DT_Pre_Mon - Your previous month inter-AZ data transfer split by reource ID    
     Inter_AZ_DT_Pre_LastMon - The month before previous month inter-AZ data transfer split by reource ID    
   
-You can also customize report by modifying query strings defined in config.yml to get your interested report. The main advantage of this tool is that you get the report in ‘resource id’ and ‘hours’ granularity which cost explorer cannot provide.
-Moving forward, I’ll enhance the tool from the feedback from users.
+You can also customize report by modifying query strings defined in config.yml to get your interested report. The main advantage of this tool is that you can get the report in ‘resource id’ and ‘hours’ granularity which cost explorer cannot provide.
+
 
 
 ### Prerequisites
