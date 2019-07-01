@@ -29,7 +29,7 @@ https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/athena.html
   
 2.	Setup a Lambda function    
     * a.	Use Python 2.7 runtime    
-    * b.	Handler name: <file name>.lambda_handler    
+    * b.	Handler name: curReport.lambda_handler    
     * c.	Config variables in either way: 1) Through config.yml OR 2) Set Environment Variables as follow: 
           
           REGION – SES region
