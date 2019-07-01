@@ -1,0 +1,118 @@
+Region: us-east-1
+CUR_Output_Location: s3://Your/Query/Results/Path/
+CUR_DB: YourAthenaDb.YourCURTable
+CUR_Report_Name: ReportName.xlsx
+
+#Mail configuration
+Subject: Your Mail Subject Name
+Sender: 'sender@example.com'
+Recipient: 'receiver@example.com'
+Body_Text: "Hi,
+
+Please find your Inter AZ Data Trasnfer Report attached:
+
+Inter_AZ_DT_MOM - Your month over month inter-AZ data transfer usage and change in the past three months
+
+Inter_AZ_DT_WOW - Your week over weeek inter-AZ data transfer usage and change in the past three months
+
+Inter_AZ_DT_Cur_Mon - Your current month inter-AZ data transfer split by reource ID 
+
+Inter_AZ_DT_Pre_Mon - Your previous month inter-AZ data transfer split by reource ID 
+
+Inter_AZ_DT_Pre_LastMon - The month before previous month inter-AZ data transfer split by reource ID"
+
+Query_String_List:
+  - Inter_AZ_DT_MOM_Chart: SELECT *
+      , ("Usage_This_Month(GB)" - "Usage_Last_Month(GB)") as Diff_Usage_From_Last_Month,("Cost_This_Month($)" - "Cost_Last_Month($)") as Diff_Cost_From_Last_Month FROM (
+      SELECT
+      year
+      ,month(line_item_usage_start_date) month
+      ,sum(line_item_usage_amount) as "Usage_This_Month(GB)"
+      ,sum(line_item_unblended_cost)  as "Cost_This_Month($)"
+      ,lag(sum(line_item_usage_amount),1) over (order by year,month(line_item_usage_start_date)) as "Usage_Last_Month(GB)"
+      ,lag(sum(line_item_unblended_cost),1) over (order by year,month(line_item_usage_start_date)) as "Cost_Last_Month($)"
+      FROM
+      CUR_DB
+      WHERE
+      line_item_usage_type like '%-DataTransfer-Regional-Bytes%'  AND  
+      line_item_product_code = 'AmazonEC2'  AND
+      (year='CURRENT_YEAR' AND month='CURRENT_MONTH') OR
+      (year='CUR_PRE_YEAR' AND month='PRE_MONTH') OR 
+      (year='PRE_YEAR' AND month='PRE_LAST_MONTH') 
+      GROUP BY
+      1,2
+      ORDER BY
+      1,2)
+  - Inter_AZ_DT_WOW_Chart: SELECT *
+      , ("Usage_This_Week(GB)" - "Usage_Last_Week(GB)") as Diff_Usage_From_Last_Week,("Cost_This_Week($)" - "Cost_Last_Week($)") as Diff_Cost_From_Last_Week FROM (
+      SELECT
+      year
+      ,month(line_item_usage_start_date) month
+      ,week(line_item_usage_start_date) week
+      ,sum(line_item_usage_amount) as "Usage_This_Week(GB)"
+      ,sum(line_item_unblended_cost)  as "Cost_This_Week($)"
+      ,lag(sum(line_item_usage_amount),1) over (order by year,month(line_item_usage_start_date),week(line_item_usage_start_date)) as "Usage_Last_Week(GB)"
+      ,lag(sum(line_item_unblended_cost),1) over (order by year,month(line_item_usage_start_date),week(line_item_usage_start_date)) as "Cost_Last_Week($)"
+      FROM
+      CUR_DB
+      WHERE
+      line_item_usage_type like '%-DataTransfer-Regional-Bytes%'  AND  
+      line_item_product_code = 'AmazonEC2'  AND
+      (year='CURRENT_YEAR' AND month='CURRENT_MONTH') OR
+      (year='CUR_PRE_YEAR' AND month='PRE_MONTH') OR 
+      (year='PRE_YEAR' AND month='PRE_LAST_MONTH') 
+      GROUP BY
+      1,2,3
+      ORDER BY
+      1,2,3)
+  - Inter_AZ_DT_Cur_Mon: SELECT
+      line_item_product_code as Product_Name,  
+      line_item_resource_id as Resource_Id,  
+      line_item_usage_type as Usage_Type,
+      sum(line_item_usage_amount) as "Inter_AZ_Data_Transfer(GB)", 
+      sum(line_item_blended_cost) as "Cost($)" 
+      FROM
+      CUR_DB
+      WHERE 
+      "line_item_usage_type" like '%Bytes%' 
+      AND "line_item_usage_type" like '%Regional%' 
+      AND year='CURRENT_YEAR' AND month='CURRENT_MONTH'
+      GROUP BY 
+      Line_item_product_code,
+      line_item_resource_id,
+      line_item_usage_type
+      ORDER BY sum("line_item_blended_cost") desc
+  - Inter_AZ_DT_Pre_Mon: SELECT
+      line_item_product_code as Product_Name,  
+      line_item_resource_id as Resource_Id,  
+      line_item_usage_type as Usage_Type,
+      sum(line_item_usage_amount) as "Inter_AZ_Data_Transfer(GB)", 
+      sum(line_item_blended_cost) as "Cost($)" 
+      FROM
+      CUR_DB
+      WHERE 
+      "line_item_usage_type" like '%Bytes%' 
+      AND "line_item_usage_type" like '%Regional%' 
+      AND year='CUR_PRE_YEAR' AND month='PRE_MONTH'
+      GROUP BY 
+      Line_item_product_code,
+      line_item_resource_id,
+      line_item_usage_type
+      ORDER BY sum("line_item_blended_cost") desc
+  - Inter_AZ_DT_Pre_LastMon: SELECT
+      line_item_product_code as Product_Name,  
+      line_item_resource_id as Resource_Id,  
+      line_item_usage_type as Usage_Type,
+      sum(line_item_usage_amount) as "Inter_AZ_Data_Transfer(GB)", 
+      sum(line_item_blended_cost) as "Cost($)" 
+      FROM
+      CUR_DB
+      WHERE 
+      "line_item_usage_type" like '%Bytes%' 
+      AND "line_item_usage_type" like '%Regional%' 
+      AND year='PRE_YEAR' AND month='PRE_LAST_MONTH'
+      GROUP BY 
+      Line_item_product_code,
+      line_item_resource_id,
+      line_item_usage_type
+      ORDER BY sum("line_item_blended_cost") desc
