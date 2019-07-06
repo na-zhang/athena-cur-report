@@ -10,7 +10,7 @@ Current sample is generating data transfer report in varies dimensions including
     Inter_AZ_DT_Pre_Mon - Your previous month inter-AZ data transfer split by reource ID    
     Inter_AZ_DT_Pre_LastMon - The month before previous month inter-AZ data transfer split by reource ID    
   
-You can also customize report by modifying query strings defined in config.yml to get your interested report. The main advantage of this tool is that you can get the report in ‘resource id’ and ‘hours’ granularity which cost explorer cannot provide.
+You can also customize report by modifying query strings defined in config.yml to get your interested report. The main advantage of this tool is that you can get the report in ‘resource id’ and ‘hours’ granularity which cost explorer cannot provide(like top 5 S3 bucket usage).
 
 
 
